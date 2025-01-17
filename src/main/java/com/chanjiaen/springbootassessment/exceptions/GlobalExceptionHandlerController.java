@@ -3,13 +3,14 @@ package com.chanjiaen.springbootassessment.exceptions;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.*;
@@ -47,6 +48,7 @@ public class GlobalExceptionHandlerController extends ResponseEntityExceptionHan
 
     }
 
+    // exception handler for resource not found exceptions
     @ExceptionHandler (ResourceNotFoundException.class)
     public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException resourceNotFoundException) {
 
@@ -56,8 +58,16 @@ public class GlobalExceptionHandlerController extends ResponseEntityExceptionHan
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
+    // overriding http message not readable exception with a custom message
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        MessageNotReadableException messageNotReadableException = new MessageNotReadableException();
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", messageNotReadableException.getMessage());
 
-    // TODO exception handling for non boolean when creating task
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     /*@ExceptionHandler (MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException validEx) {
         BindingResult result = validEx.getBindingResult();

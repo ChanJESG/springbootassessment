@@ -54,7 +54,7 @@ public class TaskController {
 
     // create a new task
     @PostMapping("")
-    public ResponseEntity<Object> createTask(@Valid @RequestBody Task task) {
+    public ResponseEntity<Object> createTask(@RequestBody Task task) {
 
         Task createdTask = taskService.createnewTask(task);
 
