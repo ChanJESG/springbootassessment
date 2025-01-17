@@ -19,6 +19,7 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
+    // get all tasks in the database
     @GetMapping("")
     public ResponseEntity<List<Task>> getAllTasks() {
         List<Task> tasks = taskService.getAllTask();
@@ -26,10 +27,10 @@ public class TaskController {
         if (tasks.isEmpty())
             throw new ResourceNotFoundException();
 
-
         return ResponseEntity.ok(tasks);
     }
 
+    // get tasks with completed: true
     @GetMapping("/completed")
     public ResponseEntity<List<Task>> getAllCompletedTasks() {
         List<Task> completedTasks = taskService.findAllCompletedTask();
@@ -40,6 +41,7 @@ public class TaskController {
         return ResponseEntity.ok(completedTasks);
     }
 
+    // get tasks with completed: false
     @GetMapping("/incomplete")
     public ResponseEntity<List<Task>> getAllIncompleteTasks() {
         List<Task> incompleteTasks = taskService.findAllInCompleteTask();
@@ -50,14 +52,17 @@ public class TaskController {
         return ResponseEntity.ok(incompleteTasks);
     }
 
+    // create a new task
     @PostMapping("")
-    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
+    public ResponseEntity<Object> createTask(@Valid @RequestBody Task task) {
 
         Task createdTask = taskService.createnewTask(task);
 
-        return new ResponseEntity<>(createdTask,HttpStatus.CREATED);
+        return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
+
     }
 
+    // update a task using its id
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task){
         Task currentTask = taskService.findTaskById(id).map(foundTask -> {
@@ -70,6 +75,7 @@ public class TaskController {
         return new ResponseEntity<>(currentTask, HttpStatus.OK);
     }
 
+    // delete a task using its id
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteTask(@PathVariable Long id) {
         Task deletedTask = taskService.findTaskById(id).map(foundTask -> {
